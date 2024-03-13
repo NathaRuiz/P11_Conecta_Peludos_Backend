@@ -22,8 +22,8 @@ return new class extends Migration
             $table->enum('age', ['Cachorro', 'Adulto', 'Senior']);
             $table->string('approximate_age');
             $table->enum('status', ['Urgente', 'Disponible', 'En Acogida', 'Reservado', 'Adoptado']);
-            $table->string('my_story');
-            $table->string('description');
+            $table->string('my_story', 500);
+            $table->string('description', 400);
             $table->string('delivery_options');
             $table->string('image_url')->nullable();
             $table->string('public_id')->nullable();
