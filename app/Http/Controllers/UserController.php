@@ -30,11 +30,16 @@ class UserController extends Controller
 
     public function sendMessageToShelter(Request $request, $animalId)
     {
+        $request->validate([
+            'message' => 'required|string',
+        ]);
+
         $user = $request->user();
         $messageContent = $request->input('message');
 
         // Buscar el animal
         $animal = Animal::findOrFail($animalId);
+
 
         // Verificar si el usuario tiene permiso para enviar mensajes
         if (!$user->hasRole('user')) {
@@ -48,9 +53,6 @@ class UserController extends Controller
             $message->to($shelterEmail)
                     ->subject('Mensaje de un usuario interesado');
         });
-
-        // Aquí puedes implementar la lógica para enviar el mensaje al usuario de la protectora o refugio
-        // Por ejemplo, puedes enviar un correo electrónico, almacenar el mensaje en la base de datos, etc.
 
         return response()->json(['message' => 'Mensaje enviado correctamente a la protectora o refugio'], 200);
     }
