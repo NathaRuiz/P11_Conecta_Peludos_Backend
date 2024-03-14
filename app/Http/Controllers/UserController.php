@@ -14,7 +14,7 @@ class UserController extends Controller
         $animalId = $request->input('animal_id');
 
         $user->favoriteAnimals()->attach($animalId);
-        
+
         return response()->json(['message' => 'Animal agregado a favoritos correctamente'], 200);
     }
 
@@ -24,8 +24,18 @@ class UserController extends Controller
         $animalId = $request->input('animal_id');
 
         $user->favoriteAnimals()->detach($animalId);
-        
+
         return response()->json(['message' => 'Animal eliminado de favoritos correctamente'], 200);
+    }
+
+    public function clearFavorites(Request $request)
+    {
+        $user = $request->user();
+
+        // Utilizar el método detach sin argumentos para eliminar todas las relaciones
+        $user->favoriteAnimals()->detach();
+
+        return response()->json(['message' => 'Todos los favoritos han sido eliminados correctamente'], 200);
     }
 
     public function sendMessageToShelter(Request $request, $animalId)
@@ -51,7 +61,7 @@ class UserController extends Controller
         // Enviar el correo electrónico
         Mail::raw($messageContent, function ($message) use ($shelterEmail) {
             $message->to($shelterEmail)
-                    ->subject('Mensaje de un usuario interesado');
+                ->subject('Mensaje de un usuario interesado');
         });
 
         return response()->json(['message' => 'Mensaje enviado correctamente a la protectora o refugio'], 200);

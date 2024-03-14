@@ -159,32 +159,6 @@ class AdminController extends Controller
         }
     }
 
-    public function storeUser(UserRequest $request)
-    {try {
-        $userData = $request->validated(); // Obtener los datos validados del request
-
-        // Subir la imagen del usuario a Cloudinary si se proporcionó
-        if ($request->hasFile('image_url')) {
-            $file = $request->file('image_url');
-            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
-
-            if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
-                throw new \Exception('Error al cargar la imagen del usuario');
-            }
-
-            // Actualizar el campo de imagen_url y public_id en los datos del usuario
-            $userData['image_url'] = $cloudinaryUpload->getSecurePath();
-            $userData['public_id'] = $cloudinaryUpload->getPublicId();
-        }
-
-        $user = User::create($userData); // Crear el usuario con los datos validados
-
-        return response()->json($user, 201);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 500, 'message' => 'Error al almacenar usuario: ' . $e->getMessage()], 500); 
-    }
-    }
-
     public function updateUser(UserRequest $request, $id)
     {
         try {

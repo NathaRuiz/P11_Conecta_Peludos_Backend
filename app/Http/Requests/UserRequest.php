@@ -31,6 +31,8 @@ class UserRequest extends FormRequest
             'image_url' => 'nullable',
             'public_id' => 'nullable',
             'password' => 'required|string|min:6|confirmed',
+            'role_id' => 'required|exists:roles,id',
+            'type' => 'nullable|in:Protectora,Refugio',
         ];
     }
 }
