@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AnimalRequest;
-use App\Http\Requests\UserRequest;
 use App\Models\Animal;
 use Illuminate\Database\QueryException;
 

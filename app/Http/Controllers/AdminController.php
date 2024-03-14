@@ -49,21 +49,21 @@ class AdminController extends Controller
     public function showAnimal($id)
     {
         try {
-        $animal = Animal::findOrFail($id);
-        return response()->json($animal);
-    } catch (QueryException $e) {
-        return response()->json(['status' => 500, 'message' => 'Error al buscar animal: ' . $e->getMessage()], 500);
-    }
+            $animal = Animal::findOrFail($id);
+            return response()->json($animal);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al buscar animal: ' . $e->getMessage()], 500);
+        }
     }
 
     public function storeAnimal(AnimalRequest $request)
     {
         try {
-        $animal = Animal::create($request->all());
-        return response()->json($animal, 201);
-    } catch (QueryException $e) {
-        return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
-    }
+            $animal = Animal::create($request->all());
+            return response()->json($animal, 201);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
+        }
     }
 
     public function updateAnimal(AnimalRequest $request, $id)

@@ -50,7 +50,7 @@ class User extends Authenticatable
 
     public function favoriteAnimals()
     {
-        return $this->belongsToMany(Animal::class);
+        return $this->belongsToMany(Animal::class, 'animal_user', 'user_id', 'animal_id')->withTimestamps();
     }
 
     public function animals()
