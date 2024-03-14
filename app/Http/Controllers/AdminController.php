@@ -93,9 +93,11 @@ class AdminController extends Controller
     {
         try {
             $animal = Animal::findOrFail($id);
+            $public_id = $animal->public_id;
 
             // Subir la nueva imagen a Cloudinary si se proporcionó una
             if ($request->hasFile('image_url')) {
+                Cloudinary::destroy($public_id); 
                 $file = $request->file('image_url');
                 $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
 

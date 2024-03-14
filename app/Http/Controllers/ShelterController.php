@@ -78,6 +78,7 @@ class ShelterController extends Controller
         try {
             $user = auth()->user();
             $animal = Animal::where('id', $id)->where('user_id', $user->id)->first();
+            $public_id = $animal->public_id;
 
             if (!$animal) {
                 return response()->json(['message' => 'Animal no encontrado o usuario no autorizado'], 404);
@@ -85,6 +86,7 @@ class ShelterController extends Controller
 
             // Subir la nueva imagen a Cloudinary si se proporcionó una
             if ($request->hasFile('image')) {
+                Cloudinary::destroy($public_id); 
                 $file = $request->file('image');
                 $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
 
