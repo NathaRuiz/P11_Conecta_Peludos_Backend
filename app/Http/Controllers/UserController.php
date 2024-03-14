@@ -3,11 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Animal;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
+    public function getShelters()
+    {
+        try {
+            $shelters = User::whereHas('role', function ($query) {
+                $query->where('name', 'Shelter');
+            })->get();
+
+            return response()->json($shelters, 200);
+        } catch (\Exception $e) {
+            // Manejar errores si la consulta falla
+            return response()->json(['message' => 'Error al obtener las Protectoras y Refugios: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function addToFavorites(Request $request)
     {
         $user = $request->user();
