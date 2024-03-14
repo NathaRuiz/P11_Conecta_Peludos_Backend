@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Province;
 use App\Models\User;
 use Illuminate\Database\QueryException;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
 class AdminController extends Controller
@@ -59,8 +60,30 @@ class AdminController extends Controller
     public function storeAnimal(AnimalRequest $request)
     {
         try {
-            $animal = Animal::create($request->all());
-            return response()->json($animal, 201);
+            $file = $request->file('image_url');
+            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+
+            if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
+                throw new \Exception('Error al cargar la imagen');
+            }
+
+            $newAnimal = Animal::create([
+                'name' => $request->input('name'),
+                'breed' => $request->input('breed'),
+                'gender' => $request->input('gender'),
+                'size' => $request->input('size'),
+                'age' => $request->input('age'),
+                'approximate_age' => $request->input('approximate_age'),
+                'status' => $request->input('status'),
+                'my_story' => $request->input('my_story'),
+                'description' => $request->input('description'),
+                'delivery_options' => $request->input('delivery_options'),
+                'category_id' => $request->input('category_id'),
+                'image_url' => $cloudinaryUpload->getSecurePath(),
+                'public_id' => $cloudinaryUpload->getPublicId(),
+                'user_id' => $request->input('user_id'),
+            ]);
+            return response()->json($newAnimal, 201);
         } catch (QueryException $e) {
             return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
         }
@@ -70,7 +93,34 @@ class AdminController extends Controller
     {
         try {
             $animal = Animal::findOrFail($id);
-            $animal->update($request->all());
+
+            // Subir la nueva imagen a Cloudinary si se proporcionó una
+            if ($request->hasFile('image_url')) {
+                $file = $request->file('image_url');
+                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+
+                if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
+                    throw new \Exception('Error al cargar la nueva imagen a Cloudinary');
+                }
+
+                // Actualizar la URL y el ID público de la imagen en Cloudinary
+                $animal->image_url = $cloudinaryUpload->getSecurePath();
+                $animal->public_id = $cloudinaryUpload->getPublicId();
+            }
+
+            $animal->update([
+                'name' => $request->input('name'),
+                'breed' => $request->input('breed'),
+                'gender' => $request->input('gender'),
+                'size' => $request->input('size'),
+                'age' => $request->input('age'),
+                'approximate_age' => $request->input('approximate_age'),
+                'status' => $request->input('status'),
+                'my_story' => $request->input('my_story'),
+                'description' => $request->input('description'),
+                'delivery_options' => $request->input('delivery_options'),
+            ]);
+            
             return response()->json(['message' => 'Animal actualizado correctamente'], 200);
         } catch (QueryException $e) {
             return response()->json(['status' => 500, 'message' => 'Error al actualizar animal: ' . $e->getMessage()], 500);
@@ -108,23 +158,57 @@ class AdminController extends Controller
     }
 
     public function storeUser(UserRequest $request)
-    {
-        try {
-            $user = User::create($request->all());
-            return response()->json($user, 201);
-        } catch (QueryException $e) {
-            return response()->json(['status' => 500, 'message' => 'Error al almacenar usuario: ' . $e->getMessage()], 500);
+    {try {
+        $userData = $request->validated(); // Obtener los datos validados del request
+
+        // Subir la imagen del usuario a Cloudinary si se proporcionó
+        if ($request->hasFile('image_url')) {
+            $file = $request->file('image_url');
+            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+
+            if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
+                throw new \Exception('Error al cargar la imagen del usuario');
+            }
+
+            // Actualizar el campo de imagen_url y public_id en los datos del usuario
+            $userData['image_url'] = $cloudinaryUpload->getSecurePath();
+            $userData['public_id'] = $cloudinaryUpload->getPublicId();
         }
+
+        $user = User::create($userData); // Crear el usuario con los datos validados
+
+        return response()->json($user, 201);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 500, 'message' => 'Error al almacenar usuario: ' . $e->getMessage()], 500); 
+    }
     }
 
     public function updateUser(UserRequest $request, $id)
     {
         try {
-            $user = User::findOrFail($id);
-            $user->update($request->all());
-            return response()->json(['message' => 'Usuario actualizado correctamente'], 200);
-        } catch (QueryException $e) {
-            return response()->json(['status' => 500, 'message' => 'Error al actualizar usuario: ' . $e->getMessage()], 500);
+            $user = User::findOrFail($id); 
+    
+            $userData = $request->validated(); // Obtener los datos validados del request
+    
+            // Subir la nueva imagen del usuario a Cloudinary si se proporcionó
+            if ($request->hasFile('image_url')) {
+                $file = $request->file('image_url');
+                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+    
+                if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
+                    throw new \Exception('Error al cargar la nueva imagen del usuario a Cloudinary');
+                }
+    
+                // Actualizar el campo de imagen_url y public_id en los datos del usuario
+                $userData['image_url'] = $cloudinaryUpload->getSecurePath();
+                $userData['public_id'] = $cloudinaryUpload->getPublicId(); 
+            }
+    
+            $user->update($userData); // Actualizar los datos del usuario con los datos validados
+    
+            return response()->json(['message' => 'Usuario actualizado correctamente'], 200); 
+        } catch (\Exception $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al actualizar usuario: ' . $e->getMessage()], 500); 
         }
     }
 

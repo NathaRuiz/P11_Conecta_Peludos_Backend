@@ -28,8 +28,8 @@ class UserRequest extends FormRequest
             'province_id' => 'required|exists:provinces,id',
             'description' => 'nullable|string|max:400',
             'telephone' => 'required|string|max:20',
-            'image_url' => 'nullable|url|max:255',
-            'public_id' => 'nullable|string|max:255',
+            'image_url' => 'nullable',
+            'public_id' => 'nullable',
             'password' => 'required|string|min:6|confirmed',
         ];
     }
