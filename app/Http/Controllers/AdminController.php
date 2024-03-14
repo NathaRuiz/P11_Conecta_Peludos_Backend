@@ -8,97 +8,133 @@ use App\Models\Animal;
 use App\Models\Category;
 use App\Models\Province;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 
 class AdminController extends Controller
 {
-    public function IndexCategories()
+    public function indexCategories()
     {
-        $categories = Category::all();
+        try {
 
-        return response()->json($categories);
+            $categories = Category::all();
+            return response()->json($categories);
+        } catch (QueryException $e) {
+
+            return response()->json(['status' => 500, 'message' => 'Error al recuperar las categorías: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function IndexProvinces()
+    public function indexProvinces()
     {
-        $provinces = Province::all();
+        try {
 
-        return response()->json($provinces);
+            $provinces = Province::all();
+            return response()->json($provinces);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al recuperar las provincias: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function IndexAnimals()
+    public function indexAnimals()
     {
-        $animals = Animal::all();
-
-        return response()->json($animals);
+        try {
+            $animals = Animal::all();
+            return response()->json($animals);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al recuperar los animales: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function ShowAnimal($id)
+    public function showAnimal($id)
     {
+        try {
         $animal = Animal::findOrFail($id);
-
         return response()->json($animal);
+    } catch (QueryException $e) {
+        return response()->json(['status' => 500, 'message' => 'Error al buscar animal: ' . $e->getMessage()], 500);
+    }
     }
 
-    public function StoreAnimal(AnimalRequest $request)
+    public function storeAnimal(AnimalRequest $request)
     {
+        try {
         $animal = Animal::create($request->all());
-
         return response()->json($animal, 201);
+    } catch (QueryException $e) {
+        return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
+    }
     }
 
-    public function UpdateAnimal(AnimalRequest $request, $id)
+    public function updateAnimal(AnimalRequest $request, $id)
     {
-        $animal = Animal::findOrFail($id);
-        $animal->update($request->all());
-
-        return response()->json(['message' => 'Animal actualizado correctamente'], 200);
+        try {
+            $animal = Animal::findOrFail($id);
+            $animal->update($request->all());
+            return response()->json(['message' => 'Animal actualizado correctamente'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al actualizar animal: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function DestroyAnimal($id)
+    public function destroyAnimal($id)
     {
-        $animal = Animal::findOrFail($id);
-        $animal->delete();
-
-        return response()->json(['message' => 'Animal eliminado correctamente'], 200);
+        try {
+            Animal::destroy($id);
+            return response()->json(['message' => 'Animal eliminado correctamente'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al eliminar animal: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function IndexUsers()
+    public function indexUsers()
     {
-        $users = User::all();
-
-        return response()->json($users);
+        try {
+            $users = User::all();
+            return response()->json($users);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al recuperar usuarios: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function ShowUser($id)
+    public function showUser($id)
     {
-        $user = User::findOrFail($id);
-
-        return response()->json($user);
+        try {
+            $user = User::findOrFail($id);
+            return response()->json($user);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al buscar usuario: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function StoreUser(UserRequest $request)
+    public function storeUser(UserRequest $request)
     {
-        $user = User::create($request->all());
-
-        return response()->json($user, 201);
+        try {
+            $user = User::create($request->all());
+            return response()->json($user, 201);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al almacenar usuario: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function UpdateUser(UserRequest $request, $id)
+    public function updateUser(UserRequest $request, $id)
     {
-        $user = User::findOrFail($id);
-        
-        $user->update($request->all());
-
-        return response()->json(['message' => 'Usuario actualizado correctamente'], 200);
+        try {
+            $user = User::findOrFail($id);
+            $user->update($request->all());
+            return response()->json(['message' => 'Usuario actualizado correctamente'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al actualizar usuario: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function DestroyUser($id)
+    public function destroyUser($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        return response()->json(['message' => 'Usuario eliminado correctamente'], 200);
+        try {
+            User::destroy($id);
+            return response()->json(['message' => 'Usuario eliminado correctamente'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['status' => 500, 'message' => 'Error al eliminar usuario: ' . $e->getMessage()], 500);
+        }
     }
 }
