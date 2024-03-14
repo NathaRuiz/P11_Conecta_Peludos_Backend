@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -46,14 +45,19 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return response()->noContent();
+        try {
+            if ($request->user()) {
+                $request->user()->tokens()->delete();
+                Auth::guard('web')->logout();
+                return response()->json(['message' => 'Cierre de sesión exitoso']);
+            } else {
+                return response()->json(['message' => 'Usuario no autenticado'], 401);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error durante el logout: ' . $e->getMessage());
+            return response()->json(['message' => 'Error durante el logout'], 500);
+        }
     }
 }
