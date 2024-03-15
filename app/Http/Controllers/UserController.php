@@ -33,11 +33,20 @@ class UserController extends Controller
         return response()->json(['message' => 'Animal agregado a favoritos correctamente'], 200);
     }
 
-    public function removeFromFavorites(Request $request)
+    public function getFavorites(Request $request)
     {
         $user = $request->user();
-        $animalId = $request->input('animal_id');
 
+        // Obtener los animales favoritos del usuario
+        $favorites = $user->favoriteAnimals()->get();
+
+        return response()->json($favorites, 200);
+    }
+
+    public function removeFromFavorites(Request $request, $animalId)
+    {
+        $user = $request->user();
+       
         $user->favoriteAnimals()->detach($animalId);
 
         return response()->json(['message' => 'Animal eliminado de favoritos correctamente'], 200);
@@ -67,7 +76,7 @@ class UserController extends Controller
 
 
         // Verificar si el usuario tiene permiso para enviar mensajes
-        if (!$user->hasRole('user')) {
+        if (!$user->Role('User')) {
             return response()->json(['error' => 'No tienes permiso para realizar esta acción'], 403);
         }
 

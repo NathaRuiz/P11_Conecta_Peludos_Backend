@@ -37,32 +37,32 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::get('/protectoras&refugios', [UserController::class, 'getShelters']);
 Route::get('/categories', [AdminController::class, 'indexCategories']);
-Route::get('/provincesgr', [AdminController::class, 'indexProvinces']);
+Route::get('/provinces', [AdminController::class, 'indexProvinces']);
 Route::get('/animals', [AdminController::class, 'indexAnimals']);
 Route::get('/animal/{id}', [AdminController::class, 'showAnimal']);
 
 Route::middleware(['auth:sanctum', 'Admin'])->group(function () {
     Route::post('/admin/animal/create', [AdminController::class, 'storeAnimal']);
-    Route::post('/admin/animal/{id}', [AdminController::class, 'showAnimal']);
-    Route::post('/admin/animal/update/{id}', [AdminController::class, 'updateAnimal']);
-    Route::post('/admin/animal/delete/{id}', [AdminController::class, 'destroyAnimal']);
-    Route::post('/admin/users', [AdminController::class, 'indexUsers']);
-    Route::post('/admin/user/{id}', [AdminController::class, 'showUser']);
-    Route::post('/admin/user/update/{id}', [AdminController::class, 'updateUser']);
-    Route::post('/admin/user/delete/{id}', [AdminController::class, 'destroyUser']);
+    Route::put('/admin/animal/update/{id}', [AdminController::class, 'updateAnimal']);
+    Route::delete('/admin/animal/delete/{id}', [AdminController::class, 'destroyAnimal']);
+    Route::get('/admin/users', [AdminController::class, 'indexUsers']);
+    Route::get('/admin/user/{id}', [AdminController::class, 'showUser']);
+    Route::put('/admin/user/update/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('/admin/user/delete/{id}', [AdminController::class, 'destroyUser']);
 });
 
 Route::middleware(['auth:sanctum', 'User'])->group(function () {
+    Route::get('/favorites', [UserController::class, 'getFavorites']);
     Route::post('/favorites/add', [UserController::class, 'addToFavorites']);
-    Route::post('/favorites/remove', [UserController::class, 'removeFromFavorites']);
-    Route::post('/favorites/clear', [UserController::class, 'clearFavorites']);
+    Route::delete('/favorites/remove/{id}', [UserController::class, 'removeFromFavorites']);
+    Route::delete('/favorites/clear', [UserController::class, 'clearFavorites']);
     Route::post('/send-message/{animalId}', [UserController::class, 'sendMessageToShelter']);
 });
 
 Route::middleware(['auth:sanctum', 'Shelter'])->group(function () {
-    Route::get('/animals', [ShelterController::class, 'index']);
+    Route::get('/shelter/animals', [ShelterController::class, 'index']);
     Route::post('/animal/create', [ShelterController::class, 'store']);
-    Route::get('/animal/{id}', [ShelterController::class, 'show']);
+    Route::get('/shelter/animal/{id}', [ShelterController::class, 'show']);
     Route::put('/animal/update/{id}', [ShelterController::class, 'update']);
     Route::delete('/animal/delete/{id}', [ShelterController::class, 'destroy']);
 });

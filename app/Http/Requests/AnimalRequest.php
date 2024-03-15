@@ -32,8 +32,8 @@ class AnimalRequest extends FormRequest
             'my_story' => 'required|string|max:500',
             'description' => 'required|string|max:400',
             'delivery_options' => 'required|string|max:255',
-            'image_url' => 'required',
-            // 'public_id' => 'required|string',
+            'image_url' => 'required|image',
+            'public_id' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'user_id' => 'required|exists:users,id',
         ];

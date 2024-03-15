@@ -21,23 +21,29 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', 'in:Protectora,Refugio'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'address' => ['required', 'string', 'max:255'],
             'province_id' => ['required', 'exists:provinces,id'],
-            'description' => ['nullable', 'string', 'max:400'],
             'telephone' => ['required', 'string', 'max:20'],
-            'image_url' => ['nullable', 'image', 'max:2048'], 
-            'public_id' => ['nullable'],
-            'role_id' => ['required', 'exists:roles,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ];
 
-        $userData = $request->only('name', 'email', 'address', 'province_id', 'description', 'telephone', 'type', 'role_id', 'password');
+        // Validación adicional para campos opcionales basada en el rol
+        if ($request->input('role_id') == 3) {
+            $rules = array_merge($rules, [
+                'type' => ['string', 'max:255'],
+                'description' => ['nullable', 'string', 'max:400'],
+                'image_url' => ['nullable', 'image', 'max:2048'],
+            ]);
+        }
+
+        $request->validate($rules);
 
         // Subir la imagen del usuario a Cloudinary si se proporciona
+        $imageUrl = null;
+        $publicId = null;
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
             $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
@@ -46,29 +52,30 @@ class RegisteredUserController extends Controller
                 throw new \Exception('Error al cargar la imagen del usuario');
             }
 
-            // Agregar los campos de imagen_url y public_id en los datos del usuario
-            $userData['image_url'] = $cloudinaryUpload->getSecurePath();
-            $userData['public_id'] = $cloudinaryUpload->getPublicId();
+            // Obtener los valores de imagen_url y public_id
+            $imageUrl = $cloudinaryUpload->getSecurePath();
+            $publicId = $cloudinaryUpload->getPublicId();
         }
 
         $user = User::create([
-            'name' => $userData['name'],
-            'email' => $userData['email'],
-            'address' => $userData['address'],
-            'province_id' => $userData['province_id'],
-            'description' => $userData['description'],
-            'telephone' => $userData['telephone'],
-            'type' => $userData['type'],
-            'role_id' => $userData['role_id'],
-            'password' => Hash::make($userData['password']),
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'address' => $request->input('address'),
+            'province_id' => $request->input('province_id'),
+            'description' => $request->input('description'),
+            'telephone' => $request->input('telephone'),
+            'type' => $request->input('type'),
+            'role_id' => $request->input('role_id'),
+            'password' => Hash::make($request->input('password')),
+            'image_url' => $imageUrl,
+            'public_id' => $publicId,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
-        
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['message' => 'Usuario registrado correctamente', 'token' => $token], 201);
+        return response()->json(['message' => 'Usuario registrado correctamente', 'token' => $token, 'userData' => $user], 201);
     }
 }
