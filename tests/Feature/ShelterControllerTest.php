@@ -162,7 +162,7 @@ class ShelterControllerTest extends TestCase
     public function test_destroy_method_returns_error_for_unauthorized_user()
     {
         // Crear un usuario autenticado
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role_id' => 2]);
         $this->actingAs($user);
     
         // Crear un animal asociado a un usuario diferente
