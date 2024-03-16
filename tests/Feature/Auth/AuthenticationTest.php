@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    //use RefreshDatabase;
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
@@ -20,7 +20,8 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertNoContent();
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['token']);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
@@ -37,11 +38,14 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_logout(): void
     {
+        
         $user = User::factory()->create();
+        $this->actingAs($user);
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->postJson(route('logout'));
+
+        $response->assertStatus(200);
 
         $this->assertGuest();
-        $response->assertNoContent();
     }
 }

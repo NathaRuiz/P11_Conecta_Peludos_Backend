@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AnimalRequest;
 use Illuminate\Http\Request;
 use App\Models\Animal;
 use Illuminate\Database\QueryException;
@@ -90,7 +89,7 @@ class ShelterController extends Controller
     } catch (\Exception $e) {
         // Manejo de excepciones y registro de errores
         Log::error('Error al almacenar el animal: ' . $e->getMessage());
-
+        Log::error('Stack trace: ' . $e->getTraceAsString());
         // Respuesta JSON al cliente con mensaje de error
         return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
     }
@@ -109,7 +108,7 @@ class ShelterController extends Controller
                 return response()->json(['message' => 'Animal no encontrado'], 404);
             }
 
-            return response()->json($animal);
+            return response()->json($animal, 200);
         } catch (QueryException $e) {
             return response()->json(['status' => 500, 'message' => 'Error al buscar animal: ' . $e->getMessage()], 500);
         }
