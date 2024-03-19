@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\ShelterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,24 +23,25 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 ->middleware('guest')
 ->name('login');
-
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth:sanctum')
-    ->name('logout');
-
 Route::post('/register', [RegisteredUserController::class, 'store'])
 ->middleware('guest')
 ->name('register');
 
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth:sanctum')
+    ->name('logout');
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/protectoras&refugios', [UserController::class, 'getShelters']);
-Route::get('/categories', [AdminController::class, 'indexCategories']);
-Route::get('/provinces', [AdminController::class, 'indexProvinces']);
-Route::get('/animals', [AdminController::class, 'indexAnimals']);
-Route::get('/animal/{id}', [AdminController::class, 'showAnimal']);
+Route::get('/shelters', [GuestController::class, 'getShelters']);
+Route::get('/categories', [GuestController::class, 'indexCategories']);
+Route::get('/provinces', [GuestController::class, 'indexProvinces']);
+Route::get('/animals', [GuestController::class, 'indexAnimals']);
+Route::get('/animal/{id}', [GuestController::class, 'showAnimal']);
+Route::get('/animal/{id}/data', [GuestController::class, 'getAnimalDataById']);
+Route::get('/shelter/{id}/data', [GuestController::class, 'getShelterDataById']);
+
 
 Route::middleware(['auth:sanctum', 'Admin'])->group(function () {
     Route::post('/admin/animal/create', [AdminController::class, 'storeAnimal']);

@@ -16,49 +16,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function indexCategories()
-    {
-        try {
-
-            $categories = Category::all();
-            return response()->json($categories);
-        } catch (QueryException $e) {
-
-            return response()->json(['status' => 500, 'message' => 'Error al recuperar las categorías: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function indexProvinces()
-    {
-        try {
-
-            $provinces = Province::all();
-            return response()->json($provinces);
-        } catch (QueryException $e) {
-            return response()->json(['status' => 500, 'message' => 'Error al recuperar las provincias: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function indexAnimals()
-    {
-        try {
-            $animals = Animal::all();
-            return response()->json($animals);
-        } catch (QueryException $e) {
-            return response()->json(['status' => 500, 'message' => 'Error al recuperar los animales: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function showAnimal($id)
-    {
-        try {
-            $animal = Animal::findOrFail($id);
-            return response()->json($animal);
-        } catch (QueryException $e) {
-            return response()->json(['status' => 500, 'message' => 'Error al buscar animal: ' . $e->getMessage()], 500);
-        }
-    }
-
+   
     public function storeAnimal(Request $request)
     {
          
