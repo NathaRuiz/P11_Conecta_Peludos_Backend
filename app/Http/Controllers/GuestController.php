@@ -12,18 +12,26 @@ use Illuminate\Database\QueryException;
 class GuestController extends Controller
 {
     public function getShelters()
-    {
-        try {
-            $shelters = User::whereHas('role', function ($query) {
-                $query->where('name', 'Shelter');
-            })->get();
+{
+    try {
+        $shelters = User::whereHas('role', function ($query) {
+            $query->where('name', 'Shelter');
+        })->get();
 
-            return response()->json($shelters, 200);
-        } catch (\Exception $e) {
-            // Manejar errores si la consulta falla
-            return response()->json(['message' => 'Error al obtener las Protectoras y Refugios: ' . $e->getMessage()], 500);
-        }
+        // Modificar la estructura del JSON devuelto
+        $shelters->transform(function ($shelter) {
+            $shelter->province_id = $shelter->province;
+            unset($shelter->province);
+            return $shelter;
+        });
+
+        return response()->json($shelters, 200);
+    } catch (\Exception $e) {
+        // Manejar errores si la consulta falla
+        return response()->json(['message' => 'Error al obtener las Protectoras y Refugios: ' . $e->getMessage()], 500);
     }
+}
+
 
 
     public function indexCategories()
@@ -96,8 +104,8 @@ class GuestController extends Controller
     public function getShelterDataById($id)
 {
     try {
-        // Obtener el refugio por su ID
-        $shelter = User::findOrFail($id);
+       // Obtener el refugio por su ID y role_id = 3
+       $shelter = User::where('role_id', 3)->findOrFail($id);
 
         // Obtener la provincia del refugio
         $province = Province::findOrFail($shelter->province_id);

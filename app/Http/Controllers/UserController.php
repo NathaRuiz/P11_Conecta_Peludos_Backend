@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Mail;
 class UserController extends Controller
 {
     
-    public function addToFavorites(Request $request)
+    public function addToFavorites(Request $request, $id)
     {
         $user = $request->user();
-        $animalId = $request->input('animal_id');
 
-        $user->favoriteAnimals()->attach($animalId);
+        $user->favoriteAnimals()->attach($id);
 
         return response()->json(['message' => 'Animal agregado a favoritos correctamente'], 200);
     }
@@ -30,11 +29,11 @@ class UserController extends Controller
         return response()->json($favorites, 200);
     }
 
-    public function removeFromFavorites(Request $request, $animalId)
+    public function removeFromFavorites(Request $request, $id)
     {
         $user = $request->user();
        
-        $user->favoriteAnimals()->detach($animalId);
+        $user->favoriteAnimals()->detach($id);
 
         return response()->json(['message' => 'Animal eliminado de favoritos correctamente'], 200);
     }
@@ -49,7 +48,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Todos los favoritos han sido eliminados correctamente'], 200);
     }
 
-    public function sendMessageToShelter(Request $request, $animalId)
+    public function sendMessageToShelter(Request $request, $id)
     {
         $request->validate([
             'message' => 'required|string',
@@ -59,7 +58,7 @@ class UserController extends Controller
         $messageContent = $request->input('message');
 
         // Buscar el animal
-        $animal = Animal::findOrFail($animalId);
+        $animal = Animal::findOrFail($id);
 
 
         // Verificar si el usuario tiene permiso para enviar mensajes
