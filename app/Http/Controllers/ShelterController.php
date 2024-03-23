@@ -127,15 +127,32 @@ class ShelterController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'breed' => 'required|string|max:255',
+                'gender' => 'required|in:Macho,Hembra',
+                'size' => 'required|in:Pequeño,Mediano,Grande,Gigante',
+                'age' => 'required|in:Cachorro,Adulto,Senior',
+                'approximate_age' => 'required|string|max:255',
+                'status' => 'required|in:Urgente,Disponible,En Acogida,Reservado,Adoptado',
+                'my_story' => 'required|string|max:500',
+                'description' => 'required|string|max:400',
+                'delivery_options' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+            ]);
             $user = auth()->user();
             $animal = Animal::where('id', $id)->where('user_id', $user->id)->first();
 
             if (!$animal || $animal->user_id != $user->id) {
                 return response()->json(['message' => 'Animal no encontrado o acceso no autorizado'], 404);
             }
+            $userData = $request->only([
+                'name', 'breed', 'gender', 'size',
+                'age', 'approximate_age', 'status', 'my_story', 'description', 'delivery_options', 'category_id'
+            ]);
 
             // Verificar si se proporcionó un archivo y si es válido
-            if ($request->hasFile('image_url') && $request->file('image_url')->isValid()) {
+            if ($request->hasFile('image_url') ) {
                 $file = $request->file('image_url');
                 Log::info('Archivo recibido:', ['filename' => $file->getClientOriginalName()]);
                 $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
@@ -144,26 +161,28 @@ class ShelterController extends Controller
                     throw new \Exception('Error al cargar la nueva imagen a Cloudinary');
                 }
 
-                // Actualizar la URL y el ID público de la nueva imagen
-                $animal->image_url = $cloudinaryUpload->getSecurePath();
-                $animal->public_id = $cloudinaryUpload->getPublicId();
+                // Asignar la nueva URL de la imagen y el ID público
+                $userData['image_url'] = $cloudinaryUpload->getSecurePath();
+                $userData['public_id'] = $cloudinaryUpload->getPublicId();
             }
 
-            // Actualizar los atributos del animal
-            $animal->name = $request->input('name');
-            $animal->category_id = $request->input('category_id');
-            $animal->breed = $request->input('breed');
-            $animal->gender = $request->input('gender');
-            $animal->size = $request->input('size');
-            $animal->age = $request->input('age');
-            $animal->approximate_age = $request->input('approximate_age');
-            $animal->status = $request->input('status');
-            $animal->my_story = $request->input('my_story');
-            $animal->description = $request->input('description');
-            $animal->delivery_options = $request->input('delivery_options');
+            // // Actualizar los atributos del animal
+            // $animal->name = $request->input('name');
+            // $animal->category_id = $request->input('category_id');
+            // $animal->breed = $request->input('breed');
+            // $animal->gender = $request->input('gender');
+            // $animal->size = $request->input('size');
+            // $animal->age = $request->input('age');
+            // $animal->approximate_age = $request->input('approximate_age');
+            // $animal->status = $request->input('status');
+            // $animal->my_story = $request->input('my_story');
+            // $animal->description = $request->input('description');
+            // $animal->delivery_options = $request->input('delivery_options');
 
-            // Guardar los cambios en la base de datos
-            $animal->save();
+            // // Guardar los cambios en la base de datos
+            // $animal->save();
+
+            $animal->update($userData);
             Log::info('Información del animal después de la actualización:', ['animal' => $animal]);
             return response()->json(['message' => 'Animal actualizado correctamente'], 200);
         } catch (\Exception $e) {
