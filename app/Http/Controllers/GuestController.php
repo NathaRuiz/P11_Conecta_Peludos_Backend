@@ -27,7 +27,6 @@ class GuestController extends Controller
 
         return response()->json($shelters, 200);
     } catch (\Exception $e) {
-        // Manejar errores si la consulta falla
         return response()->json(['message' => 'Error al obtener las Protectoras y Refugios: ' . $e->getMessage()], 500);
     }
 }
@@ -80,23 +79,18 @@ class GuestController extends Controller
     public function getAnimalDataById($id)
     {
         try {
-            // Obtener el animal por su ID
+          
             $animal = Animal::findOrFail($id);
-
-            // Obtener el refugio del animal
             $shelter = User::findOrFail($animal->user_id);
-
-            // Obtener la provincia del refugio
             $province = Province::findOrFail($shelter->province_id);
 
-            // Devolver los datos del animal, refugio y provincia
             return response()->json([
                 'animal' => $animal,
                 'shelter' => $shelter,
                 'province' => $province
             ]);
         } catch (\Exception $e) {
-            // Manejar errores si la consulta falla
+           
             return response()->json(['message' => 'Error al obtener la información del animal: ' . $e->getMessage()], 500);
         }
     }
@@ -104,19 +98,14 @@ class GuestController extends Controller
     public function getShelterDataById($id)
 {
     try {
-       // Obtener el refugio por su ID y role_id = 3
        $shelter = User::where('role_id', 3)->findOrFail($id);
+       $province = Province::findOrFail($shelter->province_id);
 
-        // Obtener la provincia del refugio
-        $province = Province::findOrFail($shelter->province_id);
-
-        // Devolver los datos del refugio y su provincia
         return response()->json([
             'shelter' => $shelter,
             'province' => $province
         ]);
     } catch (\Exception $e) {
-        // Manejar errores si la consulta falla
         return response()->json(['message' => 'Error al obtener la información del refugio: ' . $e->getMessage()], 500);
     }
 }

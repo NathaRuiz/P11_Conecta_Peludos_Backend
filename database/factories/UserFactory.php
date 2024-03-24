@@ -25,12 +25,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $roleId = $this->faker->randomElement([2, 3]);
+        $roleId = Role::whereIn('id', [2, 3])->get()->random()->id;
         $type = $roleId === 3 ? $this->faker->randomElement(['Protectora', 'Refugio']) : null;
         $description = $roleId === 3 ? $this->faker->text(400) : null;
         $imageUrl = $roleId === 3 ? 'https://picsum.photos/200' : null;
         $publicId = $roleId === 3 ? $this->faker->uuid : null;
-
+    
         return [
             'role_id' => $roleId,
             'name' => $this->faker->name,

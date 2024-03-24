@@ -46,10 +46,7 @@ class ShelterController extends Controller
                 'category_id' => 'required|exists:categories,id',
             ]);
             $user = Auth::user();
-            // Registro de información sobre la solicitud recibida
-            Log::info('Solicitud recibida en el método store de ShelterController.');
-
-            // Verificar si se proporcionó una imagen válida
+           
             if (!$request->hasFile('image_url') || !$request->file('image_url')->isValid()) {
                 throw new \Exception('No se proporcionó una imagen válida.');
             }
@@ -59,12 +56,10 @@ class ShelterController extends Controller
             Log::info('Archivo recibido:', ['filename' => $file->getClientOriginalName()]);
             $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
 
-            // Verificar la carga exitosa
             if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
                 throw new \Exception('Error al cargar la imagen a Cloudinary');
             }
 
-            // Crear el animal en la base de datos
             $animal = Animal::create([
                 'name' => $request->input('name'),
                 'category_id' => $request->input('category_id'),
@@ -83,16 +78,9 @@ class ShelterController extends Controller
             ]);
 
 
-            // Registro de éxito
-            Log::info('Animal guardado correctamente.');
-
-            // Respuesta JSON al cliente
             return response()->json(['message' => 'Animal guardado correctamente', 'animal' => $animal], 201);
         } catch (\Exception $e) {
-            // Manejo de excepciones y registro de errores
-            Log::error('Error al almacenar el animal: ' . $e->getMessage());
-
-            // Respuesta JSON al cliente con mensaje de error
+            
             return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
         }
     }
@@ -105,13 +93,13 @@ class ShelterController extends Controller
         try {
             $user = auth()->user();
             $animal = Animal::where('id', $id)->where('user_id', $user->id)->first();
-
+            if (!$animal) {
+                return response()->json(['status' => 404, 'message' => 'Animal not found'], 404);
+            }
             $shelter = User::findOrFail($animal->user_id);
 
-            // Obtener la provincia del refugio
             $province = Province::findOrFail($shelter->province_id);
 
-            // Devolver los datos del animal, refugio y provincia
             return response()->json([
                 'animal' => $animal,
                 'province' => $province
@@ -152,7 +140,7 @@ class ShelterController extends Controller
             ]);
 
             // Verificar si se proporcionó un archivo y si es válido
-            if ($request->hasFile('image_url') ) {
+            if ($request->hasFile('image_url')) {
                 $file = $request->file('image_url');
                 Log::info('Archivo recibido:', ['filename' => $file->getClientOriginalName()]);
                 $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);

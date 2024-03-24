@@ -13,6 +13,7 @@ class AnimalSeeder extends Seeder
      */
     public function run(): void
     {
+        var_dump('AnimalSeeder is running');
         Animal::factory()->count(10)->create();
     }
 }
