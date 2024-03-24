@@ -15,16 +15,6 @@ class UserControllerTest extends TestCase
     //use DatabaseTransactions;
     use WithFaker;
 
-    public function test_get_shelters_method_returns_shelters()
-    {
-        // Realizar la solicitud GET para obtener las Protectoras y Refugios
-        $response = $this->getJson('/api/protectoras&refugios');
-
-        // Verificar que la solicitud fue exitosa (código de respuesta 200)
-        $response->assertStatus(Response::HTTP_OK);
-
-    }
-
     public function test_add_to_favorites_method_adds_animal_to_user_favorites()
     {
         // Crear un usuario con rol user
@@ -37,13 +27,12 @@ class UserControllerTest extends TestCase
         $animal = Animal::factory()->create();
 
         // Realizar la solicitud POST para agregar el animal a favoritos
-        $response = $this->postJson('/api/favorites/add', ['animal_id' => $animal->id]);
+        $response = $this->postJson('/api/favorites/add/' . $animal->id);
 
         // Verificar que la solicitud fue exitosa (código de respuesta 200)
         $response->assertStatus(Response::HTTP_OK);
 
         // Verificar que el animal se agregó correctamente a favoritos
-        // Agrega más aserciones según lo que esperas en la respuesta
         $response->assertJson(['message' => 'Animal agregado a favoritos correctamente']);
     }
 

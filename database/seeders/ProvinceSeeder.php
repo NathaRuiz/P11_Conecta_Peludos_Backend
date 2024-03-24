@@ -8,11 +8,18 @@ use Illuminate\Database\Seeder;
 
 class ProvinceSeeder extends Seeder
 {
+     // Variable estática para verificar si ya se ejecutó el seeder
+     protected static $executed = false;
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        // Verifica si ya se ejecutó el seeder
+        if (static::$executed) {
+            return;
+        }
+        var_dump('ProvinceSeeder is running');
         $provinces = [
             'Álava',
             'Albacete',
@@ -69,5 +76,8 @@ class ProvinceSeeder extends Seeder
         foreach ($provinces as $provinceName) {
             Province::create(['name' => $provinceName]);
         }
+
+        // Marca el seeder como ejecutado
+        static::$executed = true;
     }
 }

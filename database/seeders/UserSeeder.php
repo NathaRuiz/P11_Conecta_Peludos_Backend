@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Province;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,6 +16,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        var_dump('UserSeeder is running');
+        User::factory()->count(10)->create();
         User::create([
             'role_id' => 1,
             'name' => "Conecta Peludos",
@@ -22,7 +25,7 @@ class UserSeeder extends Seeder
             'email' => 'conecta_peludos@example.com',
             'email_verified_at' => now(),
             'address' => "Calle Naranja",
-            'province_id' => 34,
+            'province_id' => Province::where('name', 'Navarra')->first()->id,
             'description' =>null,
             'telephone' => 123456789,
             'image_url' => null, 
@@ -31,6 +34,6 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-         User::factory()->count(10)->create();
+        
     }
 }
