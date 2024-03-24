@@ -25,7 +25,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $roleId = Role::all()->random()->id;
+        $roleId = $this->faker->randomElement([2, 3]);
         $type = $roleId === 3 ? $this->faker->randomElement(['Protectora', 'Refugio']) : null;
         $description = $roleId === 3 ? $this->faker->text(400) : null;
         $imageUrl = $roleId === 3 ? 'https://picsum.photos/200' : null;

@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
     public function favoriteAnimals()
     {
         return $this->belongsToMany(Animal::class, 'animal_user', 'user_id', 'animal_id')->withTimestamps();
