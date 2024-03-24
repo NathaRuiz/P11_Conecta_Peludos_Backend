@@ -1,66 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🐾 Bienvenido a ConectaPeludos 
+<img src="./public/images/Logo-Azul.svg" width="200" alt="Conecta peludos Logo">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Descripción de la Aplicación 📱
+ConectaPeludos es una aplicación web diseñada para ser intuitiva y fácil de usar. Permite a refugios y protectoras de animales en toda España registrarse y gestionar de manera eficiente la información sobre los animales disponibles para adopción. Los posibles adoptantes pueden explorar perfiles detallados de animales, filtrar según sus preferencias y ponerse en contacto directo con las organizaciones. La aplicación también incluye recursos educativos sobre la adopción responsable y proporciona soporte continuo para garantizar la felicidad y el bienestar de los animales adoptados. 
+<br><br>
 
-## About Laravel
+## Contexto/Necesidad
+La iniciativa surge como respuesta a la creciente necesidad de proporcionar una solución integral para la adopción de animales de refugios y protectoras. Aunque existen diversas organizaciones dedicadas al cuidado de animales, la falta de una plataforma centralizada limita la visibilidad y accesibilidad para aquellos que desean adoptar. Con la creciente conciencia sobre la adopción responsable y el bienestar animal, se identifica una oportunidad para crear una plataforma que agilice el proceso de adopción y promueva un compromiso a largo plazo entre los nuevos propietarios y sus mascotas.
+<br>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Tecnología:
+- Laravel Breeze: Para la gestión de autenticación y autorización.
+- Laravel Sanctum: Para la autenticación de API y la gestión de tokens de acceso.
+- Cloudinary: Para el almacenamiento y procesamiento de imágenes.
+- Mailtrap: Para probar el envio de emails.
+<br>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 💻 Pasos de Instalación:
+1. Descargar e Instalar Node.js: Visita el sitio [web oficial](https://nodejs.org/en)  y descarga la versión compatible con tu sistema operativo. Sigue las instrucciones de instalación proporcionadas en el sitio web.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. Descargar e Instalar XAMPP: Visita el sitio [web oficial](https://www.apachefriends.org/index.html) de XAMPP y descarga la versión compatible con tu sistema operativo (Windows, macOS o Linux). Sigue las instrucciones de instalación proporcionadas en el sitio web.
 
-## Learning Laravel
+3. Descargar e Instalar Composer: Visita el sitio [web oficial](https://getcomposer.org/) y descarga la versión compatible con tu sistema operativo. Sigue las instrucciones de instalación proporcionadas en el sitio web.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. Iniciar XAMPP y Apache: Después de instalar XAMPP, inicia la aplicación. Inicia el servidor Apache desde el panel de control de XAMPP.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. Puedes utilizar una base de datos compatible (por ejemplo, MySQL, PostgreSQL). En nuestro caso, se utiliza MySQL. Abre PHPMyAdmin en tu navegador web y crea la base de datos con la que vas a trabajar, por ejemplo:
+- Haz clic en "SQL" en la barra de navegación superior.
+- En la ventana de consulta SQL, pega el código SQL proporcionado:
+```sql
+CREATE DATABASE conecta_peludos;
+```
+6. [Clonar](https://docs.github.com/es/repositories/creating-and-managing-repositories/cloning-a-repository) el repositorio.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+7. Coloca el proyecto en la carpeta htdocs:
 
-## Laravel Sponsors
+8. En XAMPP, el directorio principal del servidor web es htdocs. Coloca el proyecto en este directorio.
+Abre el proyecto en Visual Studio Code (un editor de código fuente desarrollado por Microsoft para Windows, Linux, macOS y Web).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+9. Abre la terminal del proyecto en Visual Studio Code y ejecuta `composer install`.
 
-### Premium Partners
+10. Luego copia el archivo de configuración con el siguiente comando `cp .env.example .env` Configura tu archivo .env con los detalles de tu entorno, como la conexión a la base de datos.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+11. Luego debes generar la Clave de Aplicación con el siguiente comando `php artisan key:generate`.
 
-## Contributing
+12. Luego ejecuta las Migraciones y los Seeds con el siguiente comando `php artisan migrate --seed`. Esto configurará la estructura de la base de datos, creará las tablas necesarias y las poblara con los datos de prueba predefinidos en el proyecto.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+13. Iniciar el Servidor de Desarrollo: Ejecuta el siguiente comando php artisan serve. La aplicación estará disponible en http://localhost:8000 (o en el puerto especificado por la consola).
+14. Ir al Repositorio del [Fronted](https://github.com/NathaRuiz/P11_Conecta_Peludos_Frontend) y continuar con con los pasos.
 
-## Code of Conduct
+### 🖼️ Uso de Cloudinary:
+1. Crear una cuenta en Cloudinary: Visita el sitio web de Cloudinary y crea una cuenta si aún no tienes una.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. Obtener las credenciales de Cloudinary: Después de registrarte en Cloudinary, obtén las credenciales de API necesarias (cloud name, API key, API secret).
 
-## Security Vulnerabilities
+3. Configurar las credenciales de Cloudinary en tu aplicación Laravel:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Abre tu archivo `.env` y agrega las siguientes variables de entorno:
+```sql
+CLOUDINARY_CLOUD_NAME=nombre_de_tu_nube
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+```
+4. Instalar el paquete Cloudinary en tu proyecto Laravel: Ejecuta el siguiente comando en la terminal de tu proyecto: `composer require cloudinary-labs/cloudinary-laravel`
+5. Usar Cloudinary en tu aplicación: Ahora puedes usar Cloudinary para almacenar y gestionar imágenes en tu aplicación Laravel. Consulta la documentación oficial de Cloudinary para obtener más información sobre cómo cargar y manipular imágenes.
 
-## License
+### 📧 Uso de Mailtrap:
+1. Crear una cuenta en Mailtrap.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. Obtener las credenciales de Mailtrap: Después de registrarte en Mailtrap, obtén las credenciales SMTP proporcionadas por Mailtrap (SMTP username, SMTP password).
+
+3. Configurar las credenciales de Mailtrap en tu aplicación Laravel:
+
+- Abre tu archivo `.env` y agrega las siguientes variables de entorno:
+```sql
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=tu_username_smtp
+MAIL_PASSWORD=tu_contraseña_smtp
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=tu_dirección_de_correo_electrónico
+MAIL_FROM_NAME="${APP_NAME}"
+```
+4. Configurar el entorno de Mailtrap en tu archivo config/mail.php: Asegúrate de que el driver SMTP esté configurado para usar Mailtrap en tu entorno de desarrollo.
+```sql
+'driver' => env('MAIL_MAILER', 'smtp'),
+'host' => env('MAIL_HOST', 'smtp.mailtrap.io'),
+'port' => env('MAIL_PORT', 2525),
+'username' => env('MAIL_USERNAME'),
+'password' => env('MAIL_PASSWORD'),
+'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+```
+
+### 📁 Base de Datos de Prueba para Tests:
+1. Configurar la base de datos de prueba:
+
+2. En tu archivo `.env`, configura una base de datos específica para pruebas:
+```sql
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=conecta_peludos_testing
+DB_USERNAME=root
+DB_PASSWORD=
+```
+3. Ejecutar las migraciones para la base de datos de prueba:
+
+4. Ejecuta el siguiente comando en la terminal para migrar la estructura de la base de datos para las pruebas: `php artisan migrate --env=testing`
+5. Configurar el entorno de prueba en el archivo phpunit.xml:
+- Asegúrate de que el archivo phpunit.xml incluya la configuración para el entorno de prueba:
+```sql
+<env name="APP_ENV" value="testing"/>
+<env name="DB_CONNECTION" value="testing"/>
+```
+## 📜License
+
+Este proyecto está licenciado bajo los términos de la licencia MIT. Esto significa que puedes usar, copiar, modificar y distribuir el código libremente, siempre y cuando reconozcas la autoría original y no lo utilices con fines comerciales.
+
+## 👩‍💻Author
+Created with 💜 by:
+- [NathaliaRuiz](https://github.com/NathaRuiz)
