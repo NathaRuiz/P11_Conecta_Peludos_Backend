@@ -23,6 +23,6 @@ class Animal extends Model
 
     public function favoritedByUsers()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'animal_user', 'animal_id', 'user_id')->withTimestamps();
     }
 }

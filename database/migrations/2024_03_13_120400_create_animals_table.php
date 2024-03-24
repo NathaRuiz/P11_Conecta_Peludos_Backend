@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('my_story', 500);
             $table->string('description', 400);
             $table->string('delivery_options');
-            $table->string('image_url')->nullable();
-            $table->string('public_id')->nullable();
+            $table->string('image_url');
+            $table->string('public_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -13,15 +13,14 @@ class AnimalUserSeeder extends Seeder
      */
     public function run(): void
     {
-       // Obtener todos los usuarios y animales
-       $users = User::all();
-       $animals = Animal::all();
+        var_dump('AnimalUserSeeder is running');
+        $usersWithRole = User::where('role_id', 2)->get();
 
-       // Iterar sobre los animales y asignar usuarios aleatorios
-       foreach ($animals as $animal) {
-           // Asignar un usuario aleatorio al animal
-           $randomUser = $users->random();
-           $animal->favoritedByUsers()->attach($randomUser);
-       }
+        $animals = Animal::all();
+
+        foreach ($animals as $animal) {
+            $randomUser = $usersWithRole->random();
+            $animal->favoritedByUsers()->attach($randomUser);
+        }
     }
 }

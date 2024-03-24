@@ -28,7 +28,7 @@ class AnimalFactory extends Factory
             'age' => $this->faker->randomElement(['Cachorro', 'Adulto', 'Senior']),
             'approximate_age' => $this->faker->word(),
             'status' => $this->faker->randomElement(['Urgente', 'Disponible', 'En Acogida', 'Reservado', 'Adoptado']),
-            'my_story' => $this->faker->text(500), // Genera texto con hasta 500 caracteres
+            'my_story' => $this->faker->text(500), 
             'description' => $this->faker->text(400),
             'delivery_options' => $this->faker->text(255),
             'image_url' => 'https://picsum.photos/200',

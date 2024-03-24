@@ -17,11 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -48,9 +44,14 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
     public function favoriteAnimals()
     {
-        return $this->belongsToMany(Animal::class);
+        return $this->belongsToMany(Animal::class, 'animal_user', 'user_id', 'animal_id')->withTimestamps();
     }
 
     public function animals()

@@ -11,6 +11,8 @@ class AnimalUser extends Model
 
     protected $table = 'animal_user';
 
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class);
