@@ -15,11 +15,6 @@ class ProvinceSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verifica si ya se ejecutó el seeder
-        if (static::$executed) {
-            return;
-        }
-        var_dump('ProvinceSeeder is running');
         $provinces = [
             'Álava',
             'Albacete',
@@ -77,7 +72,5 @@ class ProvinceSeeder extends Seeder
             Province::create(['name' => $provinceName]);
         }
 
-        // Marca el seeder como ejecutado
-        static::$executed = true;
     }
 }

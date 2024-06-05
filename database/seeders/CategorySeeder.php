@@ -13,7 +13,6 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        var_dump('CategorySeeder is running');
         $categories = [
             'Perros',
             'Gatos',

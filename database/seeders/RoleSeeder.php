@@ -16,17 +16,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-         // Verifica si ya se ejecutó el seeder
-         if (static::$executed) {
-            return;
-        }
-
-        var_dump('RoleSeeder is running');
         Role::create(["name" => "Admin"]);
         Role::create(["name" => "User"]);
         Role::create(["name" => "Shelter"]);
 
-        // Marca el seeder como ejecutado
-        static::$executed = true;
     }
 }

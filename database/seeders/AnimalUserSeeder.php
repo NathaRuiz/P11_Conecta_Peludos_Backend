@@ -13,7 +13,6 @@ class AnimalUserSeeder extends Seeder
      */
     public function run(): void
     {
-        var_dump('AnimalUserSeeder is running');
         $usersWithRole = User::where('role_id', 2)->get();
 
         $animals = Animal::all();

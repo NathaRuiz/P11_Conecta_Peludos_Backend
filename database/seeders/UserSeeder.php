@@ -16,7 +16,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        var_dump('UserSeeder is running');
         User::factory()->count(10)->create();
         User::create([
             'role_id' => 1,
