@@ -2,12 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AnimalRequest;
-use Illuminate\Auth\Events\Registered;
-use App\Http\Requests\UserRequest;
 use App\Models\Animal;
-use App\Models\Category;
-use App\Models\Province;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -15,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
