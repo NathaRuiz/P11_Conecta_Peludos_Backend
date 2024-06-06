@@ -45,11 +45,8 @@ class ShelterController extends Controller
                 'image_url' => 'required|image',
                 'category_id' => 'required|exists:categories,id',
             ]);
+            
             $user = Auth::user();
-           
-            if (!$request->hasFile('image_url') || !$request->file('image_url')->isValid()) {
-                throw new \Exception('No se proporcionó una imagen válida.');
-            }
 
             // Subir la imagen a Cloudinary
             $file = $request->file('image_url');
@@ -127,6 +124,7 @@ class ShelterController extends Controller
                 'description' => 'required|string|max:400',
                 'delivery_options' => 'required|string|max:255',
                 'category_id' => 'required|exists:categories,id',
+                'image_url' => $request->hasFile('image') ? 'required|image' : '', 
             ]);
             $user = auth()->user();
             $animal = Animal::where('id', $id)->where('user_id', $user->id)->first();
@@ -149,34 +147,15 @@ class ShelterController extends Controller
                     throw new \Exception('Error al cargar la nueva imagen a Cloudinary');
                 }
 
-                // Asignar la nueva URL de la imagen y el ID público
                 $userData['image_url'] = $cloudinaryUpload->getSecurePath();
                 $userData['public_id'] = $cloudinaryUpload->getPublicId();
             }
 
-            // // Actualizar los atributos del animal
-            // $animal->name = $request->input('name');
-            // $animal->category_id = $request->input('category_id');
-            // $animal->breed = $request->input('breed');
-            // $animal->gender = $request->input('gender');
-            // $animal->size = $request->input('size');
-            // $animal->age = $request->input('age');
-            // $animal->approximate_age = $request->input('approximate_age');
-            // $animal->status = $request->input('status');
-            // $animal->my_story = $request->input('my_story');
-            // $animal->description = $request->input('description');
-            // $animal->delivery_options = $request->input('delivery_options');
-
-            // // Guardar los cambios en la base de datos
-            // $animal->save();
-
             $animal->update($userData);
-            Log::info('Información del animal después de la actualización:', ['animal' => $animal]);
+
             return response()->json(['message' => 'Animal actualizado correctamente'], 200);
         } catch (\Exception $e) {
-            // Manejo de excepciones y registro de errores
-            Log::error('Error al actualizar el animal: ' . $e->getMessage());
-
+        
             // Respuesta JSON al cliente con mensaje de error
             return response()->json(['status' => 500, 'message' => 'Error al actualizar el animal: ' . $e->getMessage()], 500);
         }
