@@ -65,8 +65,9 @@ Route::middleware(['auth:sanctum', 'User'])->group(function () {
 Route::middleware(['auth:sanctum', 'Shelter'])->group(function () {
     Route::get('/shelter/animal/{id}', [ShelterController::class, 'show']);
     Route::get('/shelter/animals', [ShelterController::class, 'index']);
-    Route::post('/animal/create', [ShelterController::class, 'store']);
-    Route::post('/animal/update/{id}', [ShelterController::class, 'update']);
-    Route::delete('/animal/delete/{id}', [ShelterController::class, 'destroy']);
+    Route::post('/shelter/animal/create', [ShelterController::class, 'store']);
+    Route::post('/shelter/animal/update/{id}', [ShelterController::class, 'update']);
+    Route::delete('/shelter/animal/delete/{id}', [ShelterController::class, 'destroy']);
+    Route::post('/shelter/profile/update', [ShelterController::class, 'profileUpdate']);
 });
 

@@ -45,7 +45,7 @@ class ShelterController extends Controller
                 'image_url' => 'required|image',
                 'category_id' => 'required|exists:categories,id',
             ]);
-            
+
             $user = Auth::user();
 
             // Subir la imagen a Cloudinary
@@ -77,7 +77,7 @@ class ShelterController extends Controller
 
             return response()->json(['message' => 'Animal guardado correctamente', 'animal' => $animal], 201);
         } catch (\Exception $e) {
-            
+
             return response()->json(['status' => 500, 'message' => 'Error al almacenar animal: ' . $e->getMessage()], 500);
         }
     }
@@ -124,7 +124,7 @@ class ShelterController extends Controller
                 'description' => 'required|string|max:400',
                 'delivery_options' => 'required|string|max:255',
                 'category_id' => 'required|exists:categories,id',
-                'image_url' => $request->hasFile('image') ? 'required|image' : '', 
+                'image_url' => $request->hasFile('image') ? 'required|image' : '',
             ]);
             $user = auth()->user();
             $animal = Animal::where('id', $id)->where('user_id', $user->id)->first();
@@ -155,7 +155,7 @@ class ShelterController extends Controller
 
             return response()->json(['message' => 'Animal actualizado correctamente'], 200);
         } catch (\Exception $e) {
-        
+
             // Respuesta JSON al cliente con mensaje de error
             return response()->json(['status' => 500, 'message' => 'Error al actualizar el animal: ' . $e->getMessage()], 500);
         }
@@ -183,4 +183,50 @@ class ShelterController extends Controller
             return response()->json(['status' => 500, 'message' => 'Error al eliminar animal: ' . $e->getMessage()], 500);
         }
     }
+
+    public function profileUpdate(Request $request)
+    {
+    
+        try {
+            $user = auth()->user();
+            $user = User::findOrFail($user->id);
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' =>'required|email|max:255',
+                'address' => 'required|string|max:255',
+                'province_id' => 'required|exists:provinces,id',
+                'telephone' => 'required|string|max:20',
+                'type' => 'string|max:255',
+                'description' => 'nullable|string|max:400',
+                'image_url' => $request->hasFile('image') ? 'required|image' : '',
+            ]);
+            
+            $userData = $request->only([
+                'name', 'email', 'address', 'province_id',
+                'description', 'telephone', 'type'
+            ]);
+    
+            if ($request->hasFile('image_url')) {
+                $file = $request->file('image_url');
+                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+    
+                if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
+                    throw new \Exception('Error al cargar la imagen del usuario');
+                }
+    
+                // Obtener los valores de imagen_url y public_id
+                $userData['image_url'] = $cloudinaryUpload->getSecurePath();
+                $userData['public_id'] = $cloudinaryUpload->getPublicId();
+            }
+    
+           
+            $user->update($userData);
+                
+            return response()->json(['message' => 'Datos actualizados correctamente', $userData], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 500, 'message' => 'Error al actualizar datos: ' . $th->getMessage(), $user], 500);
+        }
+    }
+    
 }
