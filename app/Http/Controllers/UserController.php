@@ -76,4 +76,35 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Mensaje enviado correctamente a la protectora o refugio'], 200);
     }
+
+    public function userProfileUpdate(Request $request)
+    {
+    
+        try {
+            $user = auth()->user();
+            $user = User::findOrFail($user->id);
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' =>'required|email|max:255',
+                'address' => 'required|string|max:255',
+                'province_id' => 'required|exists:provinces,id',
+                'telephone' => 'required|string|max:20',
+                
+            ]);
+            
+            $userData = $request->only([
+                'name', 'email', 'address', 'province_id',
+                'telephone',
+            ]);
+
+           
+            $user->update($userData);
+                
+            return response()->json(['message' => 'Datos actualizados correctamente', $userData], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 500, 'message' => 'Error al actualizar datos: ' . $th->getMessage(), $user], 500);
+        }
+    }
 }
+

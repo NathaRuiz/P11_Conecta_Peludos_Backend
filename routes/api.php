@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum', 'User'])->group(function () {
     Route::delete('/favorites/remove/{id}', [UserController::class, 'removeFromFavorites']);
     Route::delete('/favorites/clear', [UserController::class, 'clearFavorites']);
     Route::post('/send-message/{id}', [UserController::class, 'sendMessageToShelter']);
+    Route::post('/profile/update', [UserController::class, 'userProfileUpdate']);
 });
 
 Route::middleware(['auth:sanctum', 'Shelter'])->group(function () {
