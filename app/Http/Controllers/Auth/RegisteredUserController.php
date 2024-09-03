@@ -4,21 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): JsonResponse
     {
         $rules = [
@@ -30,7 +25,6 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
 
-        // Validación adicional para campos opcionales basada en el rol
         if ($request->input('role_id') == 3) {
             $rules = array_merge($rules, [
                 'type' => ['string', 'max:255'],
@@ -41,20 +35,28 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
-        // Subir la imagen del usuario a Cloudinary si se proporciona
         $imageUrl = null;
         $publicId = null;
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => config('services.cloudinary.cloud_name'),
+                    'api_key' => config('services.cloudinary.api_key'),
+                    'api_secret' => config('services.cloudinary.api_secret'),
+                ],
+                'url' => ['secure' => true]
+            ]);
+            $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                'folder' => 'conecta_peludos'
+            ]);
 
-            if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
-                throw new \Exception('Error al cargar la imagen del usuario');
+            if (!$uploadResult['secure_url'] || !$uploadResult['public_id']) {
+                return response()->json(['message' => 'Error al subir la imagen'], 500);
             }
 
-            // Obtener los valores de imagen_url y public_id
-            $imageUrl = $cloudinaryUpload->getSecurePath();
-            $publicId = $cloudinaryUpload->getPublicId();
+            $imageUrl = $uploadResult['secure_url'];
+            $publicId = $uploadResult['public_id'];
         }
 
         $user = User::create([
@@ -71,11 +73,13 @@ class RegisteredUserController extends Controller
             'public_id' => $publicId,
         ]);
 
-        event(new Registered($user));
-
         Auth::login($user);
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['message' => 'Usuario registrado correctamente', 'token' => $token, 'userData' => $user], 201);
+        return response()->json([
+            'message' => 'Usuario registrado correctamente',
+            'token' => $token,
+            'userData' => $user
+        ], 201);
     }
 }
