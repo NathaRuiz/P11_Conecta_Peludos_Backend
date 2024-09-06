@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Animal;
 use App\Models\User;
+use Cloudinary\Cloudinary;
 use Illuminate\Database\QueryException;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
@@ -34,18 +34,31 @@ class AdminController extends Controller
                 'user_id' => 'required|exists:users,id',
             ]);
 
-            if (!$request->hasFile('image_url') || !$request->file('image_url')->isValid()) {
-                throw new \Exception('No se proporcionó una imagen válida.');
+            $imageUrl = null;
+            $publicId = null;
+
+            if ($request->hasFile('image_url')) {
+                $file = $request->file('image_url');
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => config('services.cloudinary.cloud_name'),
+                        'api_key' => config('services.cloudinary.api_key'),
+                        'api_secret' => config('services.cloudinary.api_secret'),
+                    ],
+                    'url' => ['secure' => true]
+                ]);
+                $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'conecta_peludos'
+                ]);
+    
+                if (!$uploadResult['secure_url'] || !$uploadResult['public_id']) {
+                    return response()->json(['message' => 'Error al subir la imagen'], 500);
+                }
+    
+                $imageUrl = $uploadResult['secure_url'];
+                $publicId = $uploadResult['public_id'];
             }
-
-            $file = $request->file('image_url');
-            Log::info('Archivo recibido:', ['filename' => $file->getClientOriginalName()]);
-            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
-
-            if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
-                throw new \Exception('Error al cargar la imagen a Cloudinary');
-            }
-
+    
             $animal = Animal::create([
                 'name' => $request->input('name'),
                 'category_id' => $request->input('category_id'),
@@ -58,8 +71,8 @@ class AdminController extends Controller
                 'my_story' => $request->input('my_story'),
                 'description' => $request->input('description'),
                 'delivery_options' => $request->input('delivery_options'),
-                'image_url' => $cloudinaryUpload->getSecurePath(),
-                'public_id' => $cloudinaryUpload->getPublicId(),
+                'image_url' => $imageUrl,
+                'public_id' => $publicId,
                 'user_id' => $request->input('user_id'),
             ]);
 
@@ -94,27 +107,43 @@ class AdminController extends Controller
             ]);
 
             $animal = Animal::findOrFail($id);
-            $public_id = $animal->public_id;
 
-            $userData = $request->only([
+            $animalData = $request->only([
                 'name', 'breed', 'gender', 'size',
                 'age', 'approximate_age', 'status', 'my_story', 'description', 'delivery_options', 'category_id', 'user_id'
             ]);
 
-            // Subir la nueva imagen a Cloudinary si se proporcionó una
             if ($request->hasFile('image_url')) {
                 $file = $request->file('image_url');
-                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
-
-                if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
-                    throw new \Exception('Error al cargar la nueva imagen a Cloudinary');
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => config('services.cloudinary.cloud_name'),
+                        'api_key' => config('services.cloudinary.api_key'),
+                        'api_secret' => config('services.cloudinary.api_secret'),
+                    ],
+                    'url' => ['secure' => true]
+                ]);
+                $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'conecta_peludos'
+                ]);
+    
+                if (!$uploadResult['secure_url'] || !$uploadResult['public_id']) {
+                    return response()->json(['message' => 'Error al actualizar la imagen'], 500);
                 }
+    
+                $imageUrl = $uploadResult['secure_url'];
+                $publicId = $uploadResult['public_id'];
 
-                $userData['image_url'] = $cloudinaryUpload->getSecurePath();
-                $userData['public_id'] = $cloudinaryUpload->getPublicId();
+                $animalData['image_url'] = $imageUrl;
+                $animalData['public_id'] = $publicId;
+    
+               
+                if ($animal->public_id) {
+                    $cloudinary->uploadApi()->destroy($animal->public_id);
+                }
             }
 
-            $animal->update($userData);
+            $animal->update($animalData);
             return response()->json(['message' => 'Animal actualizado correctamente'], 200);
         } catch (QueryException $e) {
             Log::error('Error al actualizar animal: ' . $e->getMessage());
@@ -175,7 +204,7 @@ class AdminController extends Controller
                 'province_id' => ['required', 'exists:provinces,id'],
                 'telephone' => ['required', 'string', 'max:20'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'role_id' => 'required|exists:roles,id', // Asegúrate de que el administrador especifique el rol del nuevo usuario
+                'role_id' => 'required|exists:roles,id',
             ]);
 
             if ($request->input('role_id') == 3) {
@@ -187,19 +216,29 @@ class AdminController extends Controller
             }
             $request->validate($rules);
 
-            // Subir la imagen del usuario a Cloudinary si se proporciona
             $imageUrl = null;
             $publicId = null;
+
             if ($request->hasFile('image_url')) {
                 $file = $request->file('image_url');
-                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), ['folder' => 'conecta_peludos']);
-
-                if (!$cloudinaryUpload->getSecurePath() || !$cloudinaryUpload->getPublicId()) {
-                    throw new \Exception('Error al cargar la imagen del usuario');
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => config('services.cloudinary.cloud_name'),
+                        'api_key' => config('services.cloudinary.api_key'),
+                        'api_secret' => config('services.cloudinary.api_secret'),
+                    ],
+                    'url' => ['secure' => true]
+                ]);
+                $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'conecta_peludos'
+                ]);
+    
+                if (!$uploadResult['secure_url'] || !$uploadResult['public_id']) {
+                    return response()->json(['message' => 'Error al subir la imagen'], 500);
                 }
-
-                $imageUrl = $cloudinaryUpload->getSecurePath();
-                $publicId = $cloudinaryUpload->getPublicId();
+    
+                $imageUrl = $uploadResult['secure_url'];
+                $publicId = $uploadResult['public_id'];
             }
 
             $user = User::create([
@@ -222,7 +261,7 @@ class AdminController extends Controller
         }
     }
 
-    public function updateUser(Request $request, $id)
+ public function updateUser(Request $request, $id)
 {
     try {
         $rules = [
@@ -238,29 +277,58 @@ class AdminController extends Controller
             $rules = array_merge($rules, [
                 'type' => ['string', 'max:255'],
                 'description' => ['nullable', 'string', 'max:400'],
-                // 'image_url' => ['nullable', 'image', 'max:2048'],
+                'image_url' => ['nullable', 'image', 'max:2048'],
             ]);
         }
 
         $request->validate($rules);
+
         $user = User::findOrFail($id);
 
-        // Obtener los datos actualizados del usuario desde la solicitud
         $userData = $request->only([
             'name', 'email', 'address', 'province_id',
             'description', 'telephone', 'role_id', 'type'
         ]);
 
-        // Verificar si el usuario tiene el rol adecuado para enviar ciertos campos
-        if ($request->input('role_id') != 3) {
-            // Eliminar los campos que no deberían ser enviados por usuarios con roles diferentes a 3
-            unset($userData['description']);
-            unset($userData['type']);
-            //unset($userData['image_url']);
+        if ($request->hasFile('image_url')) {
+            $file = $request->file('image_url');
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => config('services.cloudinary.cloud_name'),
+                    'api_key' => config('services.cloudinary.api_key'),
+                    'api_secret' => config('services.cloudinary.api_secret'),
+                ],
+                'url' => ['secure' => true]
+            ]);
+
+            $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                'folder' => 'conecta_peludos'
+            ]);
+
+            if (!$uploadResult['secure_url'] || !$uploadResult['public_id']) {
+                return response()->json(['message' => 'Error al subir la imagen'], 500);
+            }
+
+            $imageUrl = $uploadResult['secure_url'];
+            $publicId = $uploadResult['public_id'];
+
+            if ($user->public_id) {
+                $cloudinary->uploadApi()->destroy($user->public_id);
+            }
+
+            $userData['image_url'] = $imageUrl;
+            $userData['public_id'] = $publicId;
         }
 
+        if ($request->input('role_id') != 3) {
         
-        // Actualizar los datos del usuario en la base de datos
+            unset($userData['description']);
+            unset($userData['type']);
+            unset($userData['image_url']);
+            unset($userData['public_id']);
+        }
+
         $user->update($userData);
 
         return response()->json(['message' => 'Usuario actualizado correctamente'], 200);
@@ -268,6 +336,7 @@ class AdminController extends Controller
         return response()->json(['status' => 500, 'message' => 'Error al actualizar usuario: ' . $e->getMessage()], 500);
     }
 }
+
 
 
     public function destroyUser($id)
